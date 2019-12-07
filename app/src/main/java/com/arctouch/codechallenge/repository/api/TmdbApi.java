@@ -1,8 +1,8 @@
-package com.arctouch.codechallenge.api;
+package com.arctouch.codechallenge.repository.api;
 
-import com.arctouch.codechallenge.model.GenreResponse;
-import com.arctouch.codechallenge.model.Movie;
-import com.arctouch.codechallenge.model.UpcomingMoviesResponse;
+import com.arctouch.codechallenge.repository.model.GenreResponse;
+import com.arctouch.codechallenge.repository.model.Movie;
+import com.arctouch.codechallenge.repository.model.UpcomingMoviesResponse;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
