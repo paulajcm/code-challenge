@@ -1,5 +1,6 @@
 package com.arctouch.codechallenge.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +34,21 @@ public class HomeActivity extends AppCompatActivity {
         this.recyclerView = findViewById(R.id.recyclerView);
         this.progressBar = findViewById(R.id.progressBar);
 
+        getAllGenres();
+
+    }
+
+    private void getAllGenres() {
+        movieRepository.api.genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(genreResponse -> {
+                    Cache.setGenres(genreResponse.genres);
+                    getAllUpcomingMovies();
+                });
+    }
+
+    private void getAllUpcomingMovies(){
         movieRepository.api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, 1L, TmdbApi.DEFAULT_REGION)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
