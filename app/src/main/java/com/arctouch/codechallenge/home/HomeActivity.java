@@ -22,12 +22,21 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        this.recyclerView = findViewById(R.id.recyclerView);
-        this.progressBar = findViewById(R.id.progressBar);
-
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+        setupUi();
+    }
+
+    private void setupUi() {
+
+        this.progressBar = findViewById(R.id.progressBar);
+        this.recyclerView = findViewById(R.id.recyclerView);
+
+        HomeAdapter adapter = new HomeAdapter();
+        recyclerView.setAdapter(adapter);
+
         viewModel.loadData().observe(this, movies -> {
-            recyclerView.setAdapter(new HomeAdapter(movies));
+            adapter.submitList(movies);
             progressBar.setVisibility(View.GONE);
         });
     }

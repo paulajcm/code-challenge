@@ -2,26 +2,51 @@ package com.arctouch.codechallenge.home;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 import com.arctouch.codechallenge.repository.MovieRepository;
+import com.arctouch.codechallenge.repository.paging.MoviesDataSourceFactory;
 import com.arctouch.codechallenge.repository.model.Movie;
 
-import java.util.List;
+import io.reactivex.disposables.CompositeDisposable;
 
 
 public class HomeViewModel extends ViewModel {
 
-    private MovieRepository movieRepository;
+    private static final int PAGE_SIZE = 20;
+    private MoviesDataSourceFactory moviesDataSourceFactory;
+    private LiveData<PagedList<Movie>> upcomingMovies;
 
-    private LiveData<List<Movie>> upcomingMovies;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
 
     public HomeViewModel() {
-        movieRepository = MovieRepository.getInstance();
-        upcomingMovies = movieRepository.getAllUpcomingMovies();
+        moviesDataSourceFactory = new MoviesDataSourceFactory(compositeDisposable);
+
+        initPaging();
+    }
+
+    private void initPaging() {
+
+        PagedList.Config config =
+                new PagedList.Config.Builder()
+                        .setEnablePlaceholders(true)
+                        .setInitialLoadSizeHint(PAGE_SIZE)
+                        .setPageSize(PAGE_SIZE).build();
+
+        upcomingMovies = new LivePagedListBuilder<>(moviesDataSourceFactory, config)
+                .build();
     }
 
 
-    LiveData<List<Movie>> loadData() {
+    LiveData<PagedList<Movie>> loadData() {
         return upcomingMovies;
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        compositeDisposable.clear();
     }
 }

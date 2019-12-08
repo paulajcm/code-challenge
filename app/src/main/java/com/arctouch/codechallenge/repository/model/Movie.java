@@ -1,5 +1,8 @@
 package com.arctouch.codechallenge.repository.model;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+
 import com.squareup.moshi.Json;
 
 import java.util.List;
@@ -17,6 +20,18 @@ public class Movie {
     public String backdropPath;
     @Json(name = "release_date")
     public String releaseDate;
+
+    public static DiffUtil.ItemCallback<Movie> DIFF_CALLBACK = new DiffUtil.ItemCallback<Movie>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Movie oldItem, @NonNull Movie newItem) {
+            return oldItem.id == newItem.id;
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Movie oldItem, @NonNull Movie newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
 
     @Override
     public boolean equals(Object o) {
