@@ -15,9 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.arctouch.codechallenge.R;
 import com.arctouch.codechallenge.repository.model.Movie;
 import com.arctouch.codechallenge.util.MovieImageUrlBuilder;
+import com.arctouch.codechallenge.util.NetworkChecker;
 import com.arctouch.codechallenge.view.details.MovieDetailsActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
@@ -28,8 +31,6 @@ public class HomeAdapter extends PagedListAdapter<Movie, HomeAdapter.ViewHolder>
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        private final MovieImageUrlBuilder movieImageUrlBuilder = new MovieImageUrlBuilder();
 
         private final View itemView;
         private final TextView titleTextView;
@@ -54,15 +55,19 @@ public class HomeAdapter extends PagedListAdapter<Movie, HomeAdapter.ViewHolder>
             String posterPath = movie.posterPath;
             if (!TextUtils.isEmpty(posterPath)) {
                 Glide.with(itemView)
-                        .load(movieImageUrlBuilder.buildPosterUrl(posterPath))
+                        .load(MovieImageUrlBuilder.buildPosterUrl(posterPath))
                         .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))
                         .into(posterImageView);
             }
 
             itemView.setOnClickListener(view -> {
-                Intent intent = new Intent(itemView.getContext(), MovieDetailsActivity.class);
-                intent.putExtra("MOVIE_ID", movie.id);
-                itemView.getContext().startActivity(intent);
+                if (NetworkChecker.isNetworkAvailable(itemView.getContext())) {
+                    Intent intent = new Intent(itemView.getContext(), MovieDetailsActivity.class);
+                    intent.putExtra("MOVIE_ID", movie.id);
+                    itemView.getContext().startActivity(intent);
+                } else {
+                    Snackbar.make(itemView, R.string.waiting_network, BaseTransientBottomBar.LENGTH_LONG).show();
+                }
             });
         }
     }

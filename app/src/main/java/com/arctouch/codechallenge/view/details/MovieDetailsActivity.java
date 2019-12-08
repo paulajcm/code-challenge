@@ -36,7 +36,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         attachUi();
 
         int movieId = getIntent().getIntExtra("MOVIE_ID", 0);
-        viewModel.loadMovie(movieId).observe(this, movie -> setupUi(movie));
+        viewModel.loadMovie(movieId).observe(this, this::setupUi);
     }
 
     private void attachUi() {
@@ -58,13 +58,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(movie.posterPath)) {
             Glide.with(this)
                     .load(MovieImageUrlBuilder.buildPosterUrl(movie.posterPath))
-                    .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))
+                    .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder_white))
                     .into(posterImageView);
         }
         if (!TextUtils.isEmpty(movie.backdropPath)) {
             Glide.with(this)
                     .load(MovieImageUrlBuilder.buildBackdropUrl(movie.backdropPath))
-                    .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))
+                    .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder_white))
                     .into(backdropImageView);
         }
     }
