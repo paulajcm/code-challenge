@@ -1,4 +1,4 @@
-package com.arctouch.codechallenge.home;
+package com.arctouch.codechallenge.view.home;
 
 import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;

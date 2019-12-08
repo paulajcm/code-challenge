@@ -1,11 +1,10 @@
-package com.arctouch.codechallenge.home;
+package com.arctouch.codechallenge.view.home;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.arctouch.codechallenge.repository.MovieRepository;
 import com.arctouch.codechallenge.repository.paging.MoviesDataSourceFactory;
 import com.arctouch.codechallenge.repository.model.Movie;
 
