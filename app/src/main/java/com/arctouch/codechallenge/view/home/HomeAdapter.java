@@ -1,7 +1,6 @@
-package com.arctouch.codechallenge.home;
+package com.arctouch.codechallenge.view.home;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,26 +8,31 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.arctouch.codechallenge.R;
-import com.arctouch.codechallenge.model.Movie;
+import com.arctouch.codechallenge.repository.model.Movie;
 import com.arctouch.codechallenge.util.MovieImageUrlBuilder;
+import com.arctouch.codechallenge.util.NetworkChecker;
+import com.arctouch.codechallenge.view.details.MovieDetailsActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
-import java.util.List;
+import java.util.Objects;
 
-public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
+public class HomeAdapter extends PagedListAdapter<Movie, HomeAdapter.ViewHolder> {
 
-    private List<Movie> movies;
-
-    public HomeAdapter(List<Movie> movies) {
-        this.movies = movies;
+    public HomeAdapter() {
+        super(Movie.DIFF_CALLBACK);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final MovieImageUrlBuilder movieImageUrlBuilder = new MovieImageUrlBuilder();
-
+        private final View itemView;
         private final TextView titleTextView;
         private final TextView genresTextView;
         private final TextView releaseDateTextView;
@@ -36,6 +40,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         public ViewHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView;
             titleTextView = itemView.findViewById(R.id.titleTextView);
             genresTextView = itemView.findViewById(R.id.genresTextView);
             releaseDateTextView = itemView.findViewById(R.id.releaseDateTextView);
@@ -48,12 +53,22 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             releaseDateTextView.setText(movie.releaseDate);
 
             String posterPath = movie.posterPath;
-            if (TextUtils.isEmpty(posterPath) == false) {
+            if (!TextUtils.isEmpty(posterPath)) {
                 Glide.with(itemView)
-                        .load(movieImageUrlBuilder.buildPosterUrl(posterPath))
+                        .load(MovieImageUrlBuilder.buildPosterUrl(posterPath))
                         .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))
                         .into(posterImageView);
             }
+
+            itemView.setOnClickListener(view -> {
+                if (NetworkChecker.isNetworkAvailable(itemView.getContext())) {
+                    Intent intent = new Intent(itemView.getContext(), MovieDetailsActivity.class);
+                    intent.putExtra("MOVIE_ID", movie.id);
+                    itemView.getContext().startActivity(intent);
+                } else {
+                    Snackbar.make(itemView, R.string.waiting_network, BaseTransientBottomBar.LENGTH_LONG).show();
+                }
+            });
         }
     }
 
@@ -66,11 +81,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return movies.size();
+        return super.getItemCount();
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(movies.get(position));
+        holder.bind(Objects.requireNonNull(getItem(position)));
     }
 }
